@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: Javalab8
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/coursedb
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/changelog-master.xml
+
+logging:
+  level:
+    org.springframework.boot.autoconfigure.liquibase: DEBUG
