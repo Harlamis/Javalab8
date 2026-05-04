@@ -2,45 +2,9 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
-    <changeSet id="0" author="admin">
-
-    </changeSet>
-
-    <changeSet id="04-05-26-01" author="Yeghor Danyliuk">
-        <comment>Create Course table</comment>
-        <createTable tableName="course">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="price" type="double"/>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="04-05-26-02" author="Yeghor Danyliuk">
-        <comment>Create Student Table</comment>
-        <createTable tableName="student">
-            <column name="id" type="int" autoIncrement="true">
-                <constraints primaryKey="true" nullable="false"/>
-            </column>
-            <column name="name" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="email" type="varchar(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="registrationDate" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="04-05-26-03" author="Yeghor Danyliuk">
-        <comment>Create Instructor Table</comment>
         <createTable tableName="instructor">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -57,8 +21,43 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="04-05-26-02" author="Yeghor Danyliuk">
+        <createTable tableName="student">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="registrationDate" type="datetime" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="04-05-26-01" author="Yeghor Danyliuk">
+        <createTable tableName="course">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="length" type="int"/>
+            <column name="price" type="double"/>
+            <column name="instructor_id" type="int">
+                <constraints foreignKeyName="fk_course_instructor"
+                             referencedTableName="instructor"
+                             referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
     <changeSet id="04-05-26-04" author="Yeghor Danyliuk">
-        <comment>Create Lesson Table</comment>
         <createTable tableName="lesson">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -67,7 +66,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="content" type="text"/>
-
             <column name="course_id" type="int">
                 <constraints nullable="false"
                              foreignKeyName="fk_lesson_course"
@@ -78,7 +76,6 @@
     </changeSet>
 
     <changeSet id="04-05-26-05" author="Yeghor Danyliuk">
-        <comment>Create Review Table</comment>
         <createTable tableName="review">
             <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -87,13 +84,30 @@
                 <constraints nullable="false"/>
             </column>
             <column name="comment" type="text"/>
-
             <column name="author_id" type="int">
                 <constraints nullable="false"
                              foreignKeyName="fk_review_student"
                              referencedTableName="student"
                              referencedColumnNames="id"/>
             </column>
+            <column name="course_id" type="int">
+                <constraints nullable="false"
+                             foreignKeyName="fk_review_course"
+                             referencedTableName="course"
+                             referencedColumnNames="id"/>
+            </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="04-05-26-06" author="Yeghor Danyliuk">
+        <createTable tableName="course_students">
+            <column name="course_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_cs_course" referencedTableName="course" referencedColumnNames="id"/>
+            </column>
+            <column name="student_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_cs_student" referencedTableName="student" referencedColumnNames="id"/>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>

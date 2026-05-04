@@ -1,54 +1,22 @@
 package org.example.javalab8.controller;
 
-import org.example.javalab8.model.Review;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.example.javalab8.dto.ReviewDTO;
 import org.example.javalab8.service.ReviewService;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/reviews")
+@RequiredArgsConstructor
 public class ReviewController {
-    private final ReviewService service;
 
-    public ReviewController(ReviewService service) {
-        this.service = service;
-    }
-
-    @GetMapping
-    public List<Review> getAll() {
-        return service.getAllReviews();
-    }
-
-    @GetMapping("/{id}")
-    public Review getById(@PathVariable int id) {
-        return service.getReviewById(id);
-    }
+    private final ReviewService reviewService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void create(@RequestBody Review review) {
-        service.createReview(review);
-    }
-
-    @PatchMapping("/{id}")
-    public void patch(@PathVariable int id, @RequestBody Review incoming) {
-        Review existing = service.getReviewById(id);
-        if (incoming.getRating() != null) existing.setRating(incoming.getRating());
-        if (incoming.getComment() != null) existing.setComment(incoming.getComment());
-        if (incoming.getAuthor() != null) existing.setAuthor(incoming.getAuthor());
-        service.updateReview(id, existing);
-    }
-
-    @PutMapping("/{id}")
-    public void update(@PathVariable int id, @RequestBody Review review) {
-        service.updateReview(id, review);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id) {
-        service.deleteReview(id);
+    public ReviewDTO leaveReview(@RequestParam Integer studentId,
+                                 @RequestParam Integer courseId,
+                                 @Valid @RequestBody ReviewDTO dto) {
+        return reviewService.leaveReview(studentId, courseId, dto);
     }
 }

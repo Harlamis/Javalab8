@@ -1,48 +1,30 @@
 package org.example.javalab8.service;
 
+import lombok.RequiredArgsConstructor;
+import org.example.javalab8.dto.LessonDTO;
+import org.example.javalab8.mapper.LessonMapper;
+import org.example.javalab8.model.Course;
 import org.example.javalab8.model.Lesson;
+import org.example.javalab8.repository.CourseRepository;
 import org.example.javalab8.repository.LessonRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class LessonService {
-    private final LessonRepository repository;
 
-    public LessonService(LessonRepository repository) {
-        this.repository = repository;
-    }
+    private final LessonRepository lessonRepository;
+    private final CourseRepository courseRepository;
+    private final LessonMapper lessonMapper;
 
-    public List<Lesson> getAllLessons() {
-        return repository.findAll();
-    }
+    public LessonDTO addLessonToCourse(LessonDTO dto) {
+        // Шукаємо курс, до якого належить лекція
+        Course course = courseRepository.findById(dto.getCourseId())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
 
-    public Lesson getLessonById(int id) {
-        return repository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found"));
-    }
+        Lesson lesson = lessonMapper.toEntity(dto);
+        lesson.setCourse(course); // Встановлюємо зв'язок
 
-    public void createLesson(Lesson lesson) {
-        var lessons = repository.findAll();
-        boolean foundDuplicate = lessons.stream()
-                .anyMatch(l -> l.getTitle().equals(lesson.getTitle()));
-        if (foundDuplicate) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Lesson title already exists!");
-        }
-        repository.save(lesson);
-    }
-
-    public void updateLesson(int id, Lesson lesson) {
-        getLessonById(id);
-        lesson.setId(id);
-        repository.save(lesson);
-    }
-
-    public void deleteLesson(int id) {
-        repository.deleteById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lesson not found"));
+        return lessonMapper.toDto(lessonRepository.save(lesson));
     }
 }

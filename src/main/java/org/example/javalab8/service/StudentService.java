@@ -1,48 +1,34 @@
 package org.example.javalab8.service;
 
+import lombok.RequiredArgsConstructor;
+import org.example.javalab8.dto.StudentDTO;
+import org.example.javalab8.mapper.StudentMapper;
 import org.example.javalab8.model.Student;
 import org.example.javalab8.repository.StudentRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class StudentService {
-    private final StudentRepository repository;
 
-    public StudentService(StudentRepository repository) {
-        this.repository = repository;
+    private final StudentRepository studentRepository;
+    private final StudentMapper studentMapper;
+
+    public List<StudentDTO> getAllStudents() {
+        return studentRepository.findAll()
+                .stream()
+                .map(studentMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<Student> getAllStudents() {
-        return repository.findAll();
-    }
-
-    public Student getStudentById(int id) {
-        return repository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
-    }
-
-    public void createStudent(Student student) {
-        var students = repository.findAll();
-        boolean foundDuplicate = students.stream()
-                .anyMatch(s -> s.getEmail().equals(student.getEmail()));
-        if (foundDuplicate) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student with this email already exists!");
-        }
-        repository.save(student);
-    }
-
-    public void updateStudent(int id, Student student) {
-        getStudentById(id);
-        student.setId(id);
-        repository.save(student);
-    }
-
-    public void deleteStudent(int id) {
-        repository.deleteById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+    public StudentDTO registerStudent(StudentDTO studentDTO) {
+        Student student = studentMapper.toEntity(studentDTO);
+        student.setRegistrationDate(LocalDateTime.now());
+        Student savedStudent = studentRepository.save(student);
+        return studentMapper.toDto(savedStudent);
     }
 }

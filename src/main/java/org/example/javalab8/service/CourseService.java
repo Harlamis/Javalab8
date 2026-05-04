@@ -1,50 +1,50 @@
 package org.example.javalab8.service;
 
+import lombok.RequiredArgsConstructor;
+import org.example.javalab8.dto.CourseDTO;
+import org.example.javalab8.mapper.CourseMapper;
 import org.example.javalab8.model.Course;
 import org.example.javalab8.repository.CourseRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CourseService {
-    private final CourseRepository repository;
 
-    public CourseService(CourseRepository repository) {
-        this.repository = repository;
+    private final CourseRepository courseRepository;
+    private final CourseMapper courseMapper;
+
+    public List<CourseDTO> getAllCourses() {
+        return courseRepository.findAll()
+                .stream()
+                .map(courseMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public List<Course> getAllCourses() {
-        return repository.findAll();
+    public CourseDTO getCourseById(Integer id) {
+        Course course = courseRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+        return courseMapper.toDto(course);
     }
 
-    public Course getCourseById(int id) {
-        return repository
-                .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
+    public CourseDTO createCourse(CourseDTO courseDTO) {
+        Course course = courseMapper.toEntity(courseDTO);
+        Course savedCourse = courseRepository.save(course);
+        return courseMapper.toDto(savedCourse);
     }
 
-    public void createCourse(Course course) {
-        var courses = repository.findAll();
-        boolean foundDuplicate = courses.stream()
-                .anyMatch(c -> c.getName().equals(course.getName()));
-        if (foundDuplicate) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Course with such name already exists!");
-        }
-        repository.save(course);
+    public void deleteCourse(Integer id) {
+        courseRepository.deleteById(id);
     }
 
-    public void updateCourse(int id, Course course) {
-        getCourseById(id);
-        course.setId(id);
-        repository.save(course);
+    private final JdbcTemplate jdbcTemplate;
+
+    public Integer countStudentByCourseId(Integer courseId) {
+        String sql = "Select COUNT(*) FROM course_students WHERE course_id = ?";
+        return jdbcTemplate.queryForObject(sql, Integer.class, courseId);
     }
-
-    public void deleteCourse(int id) {
-        repository.deleteById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Course not found"));
-    }
-
-
 }
