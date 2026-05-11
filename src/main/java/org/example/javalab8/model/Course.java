@@ -3,6 +3,7 @@ package org.example.javalab8.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Generated;
+import org.apache.logging.log4j.util.Lazy;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Course {
 
     @Column(name = "price")
     private Double price;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 
