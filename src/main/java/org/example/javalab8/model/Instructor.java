@@ -19,4 +19,8 @@ public class Instructor {
 
     @Column(name = "speciality", nullable = false)
     private String speciality;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "instructor_detail_id")
+    private InstructorDetail instructorDetail;
 }

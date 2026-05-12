@@ -20,6 +20,11 @@ public class CourseController {
         return courseService.getAllCourses();
     }
 
+    @GetMapping("/n-plus-one-demo")
+    public List<CourseDTO> getNPlusOneDemo() {
+        return courseService.getAllCourses();
+    }
+
     @GetMapping("/{id}")
     public CourseDTO getById(@PathVariable Integer id) {
         return courseService.getCourseById(id);

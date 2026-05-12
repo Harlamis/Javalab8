@@ -5,7 +5,10 @@ import org.example.javalab8.dto.StudentDTO;
 import org.example.javalab8.mapper.StudentMapper;
 import org.example.javalab8.model.Student;
 import org.example.javalab8.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,5 +33,11 @@ public class StudentService {
         student.setRegistrationDate(LocalDateTime.now());
         Student savedStudent = studentRepository.save(student);
         return studentMapper.toDto(savedStudent);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<StudentDTO> getAllStudentsPaged(Pageable pageable) {
+        return studentRepository.findAll(pageable)
+                .map(studentMapper::toDto);
     }
 }

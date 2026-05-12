@@ -7,6 +7,8 @@ import org.example.javalab8.model.Course;
 import org.example.javalab8.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +21,7 @@ public class CourseService {
     private final CourseMapper courseMapper;
 
     public List<CourseDTO> getAllCourses() {
-        return courseRepository.findAll()
+        return courseRepository.findAllOptimized()
                 .stream()
                 .map(courseMapper::toDto)
                 .collect(Collectors.toList());
@@ -31,6 +33,7 @@ public class CourseService {
         return courseMapper.toDto(course);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public CourseDTO createCourse(CourseDTO courseDTO) {
         Course course = courseMapper.toEntity(courseDTO);
         Course savedCourse = courseRepository.save(course);

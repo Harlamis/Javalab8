@@ -110,4 +110,30 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="11-05-26-01" author="Yeghor Danyliuk">
+        <createTable tableName="instructor_detail">
+            <column name="id" type="INT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="bio" type="VARCHAR(1000)"/>
+            <column name="social_media" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="11-05-26-02" author="Yeghor Danyliuk">
+        <addColumn tableName="instructor">
+            <column name="instructor_detail_id" type="INT"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="instructor"
+                                 baseColumnNames="instructor_detail_id"
+                                 constraintName="fk_instructor_detail"
+                                 referencedTableName="instructor_detail"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+
+        <addUniqueConstraint tableName="instructor"
+                             columnNames="instructor_detail_id"
+                             constraintName="uk_instructor_detail"/>
+    </changeSet>
 </databaseChangeLog>
