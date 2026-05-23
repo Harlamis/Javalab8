@@ -26,7 +26,7 @@ public class CourseService {
 
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<CourseDTO> getAllCourses() {
-        return courseRepository.findAll()
+        return courseRepository.findAllOptimized()
                 .stream()
                 .map(courseMapper::toDto)
                 .collect(Collectors.toList());
@@ -38,6 +38,7 @@ public class CourseService {
         return courseMapper.toDto(course);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public CourseDTO createCourse(CourseDTO courseDTO) {
         Course course = courseMapper.toEntity(courseDTO);
         Course savedCourse = courseRepository.save(course);
