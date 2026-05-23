@@ -15,11 +15,11 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
 
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/changelog-master.xml
-
-logging:
-  level:
-    org.springframework.boot.autoconfigure.liquibase: DEBUG

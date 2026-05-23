@@ -3,6 +3,8 @@ package org.example.javalab8.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Table(name = "instructor")
 @Data
@@ -19,4 +21,7 @@ public class Instructor {
 
     @Column(name = "speciality", nullable = false)
     private String speciality;
+
+    @OneToMany(mappedBy = "instructor", fetch = FetchType.LAZY)
+    private List<Course> courses;
 }

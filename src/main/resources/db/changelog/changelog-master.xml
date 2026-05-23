@@ -110,4 +110,12 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="23-05-26-01" author="Yeghor Danyliuk">
+        <addColumn tableName="lesson">
+            <column name="instructor_id" type="int">
+                <constraints nullable="false" foreignKeyName="fk_instructor" referencedTableName="instructor" referencedColumnNames="id"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

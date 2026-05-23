@@ -5,9 +5,12 @@ import org.example.javalab8.dto.StudentDTO;
 import org.example.javalab8.mapper.StudentMapper;
 import org.example.javalab8.model.Student;
 import org.example.javalab8.repository.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<StudentDTO> getAllStudents() {
         return studentRepository.findAll()
                 .stream()
@@ -25,10 +29,25 @@ public class StudentService {
                 .collect(Collectors.toList());
     }
 
-    public StudentDTO registerStudent(StudentDTO studentDTO) {
+    public StudentDTO getStudentById(Integer id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+        return studentMapper.toDto(student);
+    }
+
+    public StudentDTO createStudent(StudentDTO studentDTO) {
         Student student = studentMapper.toEntity(studentDTO);
-        student.setRegistrationDate(LocalDateTime.now());
         Student savedStudent = studentRepository.save(student);
         return studentMapper.toDto(savedStudent);
+    }
+
+    public void deleteStudent(Integer id) {
+        studentRepository.deleteById(id);
+    }
+
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public Page<StudentDTO> getStudentsPaginated(Pageable pageable) {
+        return studentRepository.findAll(pageable)
+                .map(studentMapper::toDto);
     }
 }

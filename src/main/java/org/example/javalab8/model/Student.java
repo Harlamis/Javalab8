@@ -3,6 +3,7 @@ package org.example.javalab8.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -20,4 +21,11 @@ public class Student {
 
     @Column(name = "registrationDate", nullable = false)
     private LocalDateTime registrationDate;
+
+    @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
+    private List<Course> courses;
+
+    @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
+    private List<Review> reviews;
+
 }

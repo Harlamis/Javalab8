@@ -25,7 +25,8 @@ public class Course {
 
     @Column(name = "price")
     private Double price;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "instructor_id")
     private Instructor instructor;
 
@@ -36,4 +37,11 @@ public class Course {
             inverseJoinColumns = @JoinColumn(name = "student_id")
     )
     private List<Student> students;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private List<Lesson> lessons;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private List<Review> reviews;
+
 }
