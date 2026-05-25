@@ -26,7 +26,7 @@ public class CourseService {
 
     @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
     public List<CourseDTO> getAllCourses() {
-        return courseRepository.findAllOptimized()
+        return courseRepository.findAll()
                 .stream()
                 .map(courseMapper::toDto)
                 .collect(Collectors.toList());
